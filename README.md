@@ -16,7 +16,7 @@ action.
 
 
 This repository is mainly juet to keep track of this project for my own use,
-but if anyone stubling across it finds it useful to them, then feel free
+but if anyone stumbling across it finds it useful to them, then feel free
 to take and adapt it to your needs. The following notes may help:
 
 1. Some parts of this are Mac-specific. For example the use of scripting to
