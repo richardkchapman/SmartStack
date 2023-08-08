@@ -1,0 +1,14 @@
+tell application "System Events" to tell process "Lightroom Classic"
+set frontmost to true
+tell menu bar 1
+    tell menu bar item "Photo"
+        tell menu "Photo"
+            tell menu item "Stacking"
+                tell menu "Stacking"
+                    click menu item "Group into stack"
+                end tell
+            end tell
+        end tell
+    end tell
+end tell
+end tell

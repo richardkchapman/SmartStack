@@ -1,0 +1,9 @@
+# Canon
+
+# These may use different names for same thing vs Oly - should we translate?
+drivemode:${ContinuousDrive} 
+meteringmode:${meteringmode}
+shuttermode:${shuttermode}
+# Using %g to format to 2 sig figs. There should be an easier way!
+#focusdistancelower is not present for adapted lenses or Zeiss 21
+focusdistance:${focusdistancelower#;$_=$_==0?'inf':($_>=100?sprintf('%.0f m', sprintf('%.2g',$_)):sprintf('%.2g m',$_))}

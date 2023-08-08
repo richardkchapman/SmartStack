@@ -1,0 +1,11 @@
+# Common to Olympus and Canon
+# File name/date ones are not copied into custom metadata
+_source:$directory/$FileName
+_shotdate:$DateTimeOriginal
+filenum:${filename;$_ = /([0-9]+)[.][^.]+/ ? $1 : '0000'}
+#
+exposurecompensation:${exposurecompensation#;$_ = $_==0 ? '0' : sprintf('%+.1f', $_)}
+#lightvalue not present for adapted lenses - I suppose because meter doesn't know aperture at which it was metering
+lightvalue:${lightvalue}
+focusmode:${focusmode}
+imagestabilization:${imagestabilization;$_=/([A-Za-z]+)/?$1:'Unknown'}

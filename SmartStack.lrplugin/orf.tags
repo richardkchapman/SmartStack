@@ -1,0 +1,32 @@
+#oly only
+
+# These may use different names for same thing vs Canon - should we translate?
+drivemode:${drivemode;$_ = /([^,;]+)/ ? $1 : '' } 
+meteringmode:${meteringmode}
+shuttermode:${drivemode;$_ = /; (.*)/ ? $1 : 'Mechanical'}
+#
+#Using %g to format to 2 sig figs. There should be an easier way!
+focusdistance:${focusdistance#;$_=$_==0?'inf':($_>=100?sprintf('%.0f m', sprintf('%.2g',$_)):sprintf('%.2g m',$_))}
+#
+#af1 seems to be the same as aisubject
+#af1:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $1 : '' }
+af2:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $2 : '' }
+af3:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $3 : '' }
+af4:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $4 : '' }
+af5:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $5 : '' }
+af6:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $6 : '' }
+af7:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $7 : '' }
+af8:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $8 : '' }
+af9:${AFPointDetails;$_ = /([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+); ([^;]+)/ ? $9 : '' }
+#
+#focusprocess:${focusprocess}    # Not sure what this is telling me
+afsearch:${afsearch}
+#afareas:${afareas}
+focusbracketstepsize:${focusbracketstepsize}
+sequence:${drivemode;$_ = /Shot ([0-9]+)/ ? $1 : 0}
+#
+#These will be present on OM-1 but not Pen-F...
+#
+aisubject:${AISubjectTrackingMode;$_ = /([^;]+)/ ? $1 : '' }
+aisubjectfound:${AISubjectTrackingMode;$_ = /[^;]+; (.*)/ ? $1 : '' }
+
