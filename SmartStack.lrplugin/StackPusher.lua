@@ -5,7 +5,8 @@ local LrDialogs     = import( "LrDialogs" )
 local LrTasks       = import( "LrTasks" )
 local prefs         = import( "LrPrefs" ).prefsForPlugin()
 local LrLogger      = import( "LrLogger" )
-local spLogger      = LrLogger( "SPLogger" )
+
+require 'exiftool.lua'
 
 local function gpsDifferent(a,b)
   if a == nil or next(a) == nil then
@@ -17,24 +18,22 @@ local function gpsDifferent(a,b)
   return a.lattitude ~= b.lattitude or a.longitude ~= b.longitude
 end
 
-spLogger:enable( "logfile" )
-
-spLogger:trace("======= spLogger started " .. os.date() .. " =======")
+myLogger:trace("======= Stack propagator started " .. os.date() .. " =======")
 
 LrTasks.startAsyncTask(function()
   local catalog = LrApplication.activeCatalog()
   catalog:withWriteAccessDo("Propagating labels", function()
     local singleTarget = catalog:getTargetPhoto()
     if singleTarget == nil then
-      spLogger:trace("No photo selected - did they mean all?")
+      myLogger:trace("No photo selected - did they mean all?")
       if "cancel" == LrDialogs.confirm("No photo selected", "Do you want to run on all visible photos?") then
         return 
       end
     end
     local target = catalog.targetPhotos
-    spLogger:trace("Number of targets: " .. #target)
+    myLogger:trace("Number of targets: " .. #target)
     if #target == 1 and singleTarget ~= nil and not singleTarget:getRawMetadata("isInStackInFolder") then
-      spLogger:trace("Single photo selected - did they mean all?")
+      myLogger:trace("Single photo selected - did they mean all?")
       if "cancel" == LrDialogs.confirm("Single photo selected", "Do you want to run on all visible photos?") then
         return 
       end
@@ -46,10 +45,10 @@ LrTasks.startAsyncTask(function()
     for i,photo in ipairs(target) do
       local photoPath = photo.path
       if photo:getRawMetadata("isInStackInFolder") and photo:getRawMetadata("stackPositionInFolder") == 1 then
-        spLogger:trace("Top file: " .. photoPath)
+        -- myLogger:trace("Top file: " .. photoPath)
         stacksDone = stacksDone + 1
         local buddies = photo:getRawMetadata("stackInFolderMembers")
-        local label = photo:getRawMetadata("colorNameForLabel")
+        local label = photo:getFormattedMetadata("label")
         local gps = photo:getRawMetadata("gps")
         local altitude = photo:getRawMetadata("gpsAltitude")
         local keywords = photo:getRawMetadata("keywords")
@@ -60,15 +59,15 @@ LrTasks.startAsyncTask(function()
             local propsUpdated = 0
             childrenChecked = childrenChecked + 1
             local buddyPath = buddy:getRawMetadata("path")
-            if buddy:getRawMetadata("colorNameForLabel") ~= label then
+            if buddy:getFormattedMetadata("label") ~= label then
                 propsUpdated = propsUpdated + 1
-                spLogger:trace("Updated label")
-                buddy:setRawMetadata("colorNameForLabel", label);
+                myLogger:trace("Updated label from " .. buddy:getFormattedMetadata("label") .. " to " .. label)
+                buddy:setRawMetadata("label", label);
             end
             local buddygps = buddy:getRawMetadata("gps")
             if gpsDifferent(gps, buddygps) or buddy:getRawMetadata("gpsAltitude") ~= altitude then
               propsUpdated = propsUpdated + 1
-              spLogger:trace("Updated gps")
+              myLogger:trace("Updated gps")
               buddy:setRawMetadata("gps", gps);
               buddy:setRawMetadata("gpsAltitude", altitude);
             end
@@ -77,19 +76,25 @@ LrTasks.startAsyncTask(function()
               topval = photo:getFormattedMetadata(key)
               if buddy:getFormattedMetadata(key) ~= topval then
                 propsUpdated = propsUpdated + 1
-                spLogger:trace("Updated "..key)
+                myLogger:trace("Updated "..key)
                 buddy:setRawMetadata(key, topval);
-            end
+              end
             end
             -- keywords will need more thought for merge cases
-            if #keywords > 0 and #buddy:getRawMetadata("keywords") == 0 then
-              spLogger:trace("Updated keywords")
+            local buddyKeys = buddy:getRawMetadata("keywords")
+            if table_to_string(keywords) ~= table_to_string(buddyKeys) then
+              myLogger:trace("Updated keywords")
               propsUpdated = propsUpdated + 1
+              -- MORE - we could make this bit conditional, if we wanted to preserve keywords on children that were not on top
+              for i,keyword in ipairs(buddyKeys) do
+                buddy:removeKeyword(keyword);
+              end
               for i,keyword in ipairs(keywords) do
                 buddy:addKeyword(keyword);
               end
             end
             if propsUpdated ~= 0 then
+              myLogger:trace("Updated props for " .. buddy.path)
               childrenUpdated = childrenUpdated + 1
             end
           end

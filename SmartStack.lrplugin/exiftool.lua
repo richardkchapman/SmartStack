@@ -8,7 +8,7 @@ local LrUUID        = import( "LrUUID" )
 local prefs         = import( "LrPrefs" ).prefsForPlugin()
 local LrLogger      = import( "LrLogger" )
 
-myLogger      = LrLogger( 'BetterImport' )
+myLogger      = LrLogger( 'SmartStack' )
  
 prefs = import 'LrPrefs'.prefsForPlugin()
 if true or prefs['debug'] == 'logfile' then
